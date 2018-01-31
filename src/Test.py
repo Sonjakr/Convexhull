@@ -6,3 +6,9 @@ gs = GrahamScan("/Users/sonja/PycharmProjects/ConvexHull/src/testData")
 
 print gs
 
+list = gs.computeConvexHull()
+print gs
+print list
+print "eowrhp"
+for item in list:
+    print item

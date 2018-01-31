@@ -1,7 +1,6 @@
 class TwoDPoint:
     x = 0.0
     y = 0.0
- #   sort_by_x = True
 
     def __init__(self, x, y):
         self.x = x
@@ -11,21 +10,16 @@ class TwoDPoint:
 #        self.sort_by_x = sort_by_x
 
     def __lt__(self, other):
-        if self.sort_by_x:
-            return self.x < other.x
+        if (self.x == other.x):
+            return self.y<other.y
         else:
-            return self.y < other.y
+            return self.x<other.x
 
-    def lessthan(self, other):
-        if self.sort_by_x:
-            return self.x < other.x
-        else:
-            return self.y < other.y
     def __str__(self):
         return "("+ str(self.x)+"," +str(self.y)+")"
 
     @staticmethod
-    def p(self, point1, point2, point3):
+    def p(point1, point2, point3):
         zCrossProduct = (point2.x-point1.x)*(point3.y-point1.y)-(point2.y-point1.y)*(point3.x-point1.x)
 
         if zCrossProduct > 0:
