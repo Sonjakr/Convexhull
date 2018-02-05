@@ -1,4 +1,7 @@
 from TwoDPoint import TwoDPoint
+import math
+import matplotlib.animation as animation
+
 class GrahamScan:
     filename = ""
     points = []
@@ -13,23 +16,56 @@ class GrahamScan:
         for point in rawPoints:
             point = point.split(",")
             point = TwoDPoint(float(point[0]),float(point[1]))
+            point.sort_by_x = False;
             self.points+=[point]
 
-    def computeConvexHull(self):
-        self.points = sorted(self.points, reverse=True)
-        p1 = self.points[0]
-        i = 0;
-        while self.points[i].x==p1.x:
+    def sortPoints(self):
+        # assume pivot is at index 0
+        i = 1
+        pivot = self.points[0]
+        angels = []
+        while (i < len(self.points)):
+            delta_y = pivot.y - self.points[i].y
+            delta_x = self.points[i].x-pivot.x
+            if delta_y == 0:
+                angels+=[math.pi/2]
+            elif delta_y<0:
+                angels+=[math.atan(delta_x/delta_y)] #vertical line through pivot as reference line for angle
+            elif delta_y>0:
+                angels += [math.atan(delta_x/delta_y)+  math.pi]
             i+=1
-        self.points[0:i] = reversed(self.points[0:i])
-        convexHull = [p1,self.points[1],self.points[2]]
+        print angels
+        sortedAngels = sorted(zip(angels,self.points[1:]))
+        self.points  = [pivot] + [x for _,x in sortedAngels]
+
+
+    def computeConvexHull(self):
+        i = 0
+        max = self.points[i]
+        #index = i
+        while (i < len(self.points)):
+            if self.points[i].x > max.x:
+                max = self.points[i]
+               # indix = i
+            elif self.points[i].x==max.x and self.points[i].y<max.y:
+                max = self.points[i]
+                #index = i
+            i+=1
+        print max.x,max.y
+        self.points.remove(max);
+        self.points = [max] + self.points
+
+        self.sortPoints()
+        print self
+        convexHull = [self.points[0],self.points[1],self.points[2]]
         i = 3 # the first three points can be in the convex hull
         convexNum = 2
         while (i < len(self.points)):
-            while (TwoDPoint.p(self.points[convexNum-1],self.points[convexNum],self.points[i])<=0):
+            while (TwoDPoint.p(convexHull[-2],convexHull[-1],self.points[i])<=0):
+                #print i
                 convexNum-=1;
-                #convexHull.pop() # unnecessary
-            convexHull[convexNum] = self.points[i];
+                convexHull.pop() # unnecessary
+            convexHull.append(self.points[i]);
             i+=1;
         return convexHull
 
